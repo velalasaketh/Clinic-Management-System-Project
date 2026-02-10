@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Clinic Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="screen active">
+        <div class="login-container">
+            <div class="login-card">
+                <div class="login-header">
+                    <i class="fas fa-hospital"></i>
+                    <h1>Clinic Management System</h1>
+                    <p>Advanced Healthcare Management Solution</p>
+                </div>
+                
+                <div class="login-tabs">
+                    <button class="tab-btn active" onclick="switchTab('doctor')">
+                        <i class="fas fa-user-md"></i> Doctor
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('receptionist')">
+                        <i class="fas fa-user-tie"></i> Receptionist
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('admin')">
+                        <i class="fas fa-user-shield"></i> Admin
+                    </button>
+                </div>
+                
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> Username</label>
+                        <input type="text" id="username" required placeholder="Enter username">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-lock"></i> Password</label>
+                        <input type="password" id="password" required placeholder="Enter password">
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                </form>
+                
+                <div class="login-hint">
+                    <i class="fas fa-info-circle"></i> Demo: doctor/doctor123 | receptionist/recep123 | admin/admin123
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Receptionist Dashboard -->
+    <div id="receptionistScreen" class="screen">
+        <nav class="navbar">
+            <div class="nav-left">
+                <i class="fas fa-hospital-user"></i>
+                <h2>Receptionist Dashboard</h2>
+            </div>
+            <div class="nav-right">
+                <span class="datetime"><i class="far fa-clock"></i> <span id="recepDateTime"></span></span>
+                <button onclick="logout()" class="btn btn-logout">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </nav>
+        
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card primary">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div class="stat-content">
+                        <h3 id="totalPatients">0</h3>
+                        <p>Total Patients</p>
+                    </div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                    <div class="stat-content">
+                        <h3 id="waitingPatients">0</h3>
+                        <p>Waiting</p>
+                    </div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="stat-content">
+                        <h3 id="completedPatients">0</h3>
+                        <p>Completed</p>
+                    </div>
+                </div>
+                <div class="stat-card info">
+                    <div class="stat-icon"><i class="fas fa-rupee-sign"></i></div>
+                    <div class="stat-content">
+                        <h3 id="todayRevenue">₹0</h3>
+                        <p>Revenue</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3><i class="fas fa-user-plus"></i> Register Patient</h3>
+                    <form id="addPatientForm" onsubmit="addPatient(event)">
+                        <div class="form-group">
+                            <label><i class="fas fa-id-card"></i> Name</label>
+                            <input type="text" id="patientName" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label><i class="fas fa-birthday-cake"></i> Age</label>
+                                <input type="number" id="patientAge" required min="1">
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-venus-mars"></i> Gender</label>
+                                <select id="patientGender" required>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-phone"></i> Phone</label>
+                            <input type="tel" id="patientPhone" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-notes-medical"></i> Symptoms</label>
+                            <textarea id="patientSymptoms" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-ticket-alt"></i> Generate Token
+                        </button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fas fa-list-ol"></i> Patient Queue</h3>
+                    <div id="patientQueue" class="patient-list"></div>
+                </div>
+
+                <div class="card full-width">
+                    <h3><i class="fas fa-file-invoice-dollar"></i> Generate Bill</h3>
+                    <form id="billingForm" onsubmit="generateBill(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label><i class="fas fa-ticket-alt"></i> Token</label>
+                                <input type="text" id="billToken" required>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-money-bill-wave"></i> Consultation</label>
+                                <input type="number" id="consultationFee" value="500" required>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-pills"></i> Medicine</label>
+                                <input type="number" id="medicineCharges" value="0" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Generate</button>
+                        </div>
+                    </form>
+                    <div id="billDisplay"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Doctor Dashboard -->
+    <div id="doctorScreen" class="screen">
+        <nav class="navbar">
+            <div class="nav-left">
+                <i class="fas fa-stethoscope"></i>
+                <h2>Doctor Dashboard</h2>
+            </div>
+            <div class="nav-right">
+                <span class="datetime"><i class="far fa-clock"></i> <span id="docDateTime"></span></span>
+                <button onclick="logout()" class="btn btn-logout">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </nav>
+        
+        <div class="container">
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3><i class="fas fa-users"></i> Waiting Patients</h3>
+                    <div id="doctorPatientList" class="patient-list"></div>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fas fa-user-injured"></i> Patient Details</h3>
+                    <div id="patientDetails">
+                        <p class="empty-state">Select a patient</p>
+                    </div>
+                </div>
+
+                <div class="card full-width">
+                    <h3><i class="fas fa-prescription-bottle-alt"></i> Add Prescription</h3>
+                    <form id="prescriptionForm" onsubmit="addPrescription(event)">
+                        <input type="hidden" id="prescriptionToken">
+                        <div class="form-group">
+                            <label><i class="fas fa-stethoscope"></i> Diagnosis</label>
+                            <textarea id="diagnosis" rows="2" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-pills"></i> Medicines</label>
+                            <textarea id="medicines" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-comment-medical"></i> Instructions</label>
+                            <textarea id="instructions" rows="2" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar-alt"></i> Follow-up</label>
+                            <input type="date" id="followUp">
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save Prescription
+                        </button>
+                    </form>
+                </div>
+
+                <div class="card full-width">
+                    <h3><i class="fas fa-history"></i> Patient History</h3>
+                    <input type="text" id="searchHistory" placeholder="Search..." onkeyup="searchHistory()">
+                    <div id="historyDisplay"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="adminScreen" class="screen">
+        <nav class="navbar">
+            <div class="nav-left">
+                <i class="fas fa-chart-line"></i>
+                <h2>Admin Dashboard</h2>
+            </div>
+            <div class="nav-right">
+                <span class="datetime"><i class="far fa-clock"></i> <span id="adminDateTime"></span></span>
+                <button onclick="logout()" class="btn btn-logout">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </nav>
+        
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card primary">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div class="stat-content">
+                        <h3 id="adminTotal">0</h3>
+                        <p>Total Patients</p>
+                    </div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-icon"><i class="fas fa-rupee-sign"></i></div>
+                    <div class="stat-content">
+                        <h3 id="adminRevenue">₹0</h3>
+                        <p>Total Revenue</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3><i class="fas fa-file-medical"></i> All Patients</h3>
+                    <div id="adminPatientList"></div>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fas fa-receipt"></i> All Bills</h3>
+                    <div id="adminBillsList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
